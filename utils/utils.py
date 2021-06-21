@@ -186,3 +186,73 @@ def spotrna_2d(id, seq):
     return output_pred
 
 
+######## --------------------- parse RNAfold output ---------------------------- #########################
+def RNAfold_bps(id, seq):
+
+    with open(base_path + '/predictions/RNAfold/' + str(id) + '.dbn') as f:
+        temp = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, usecols=[0], skiprows=[0,3,4,5]).values
+    seq_pred = [i for i in temp[0,0]]
+    labels = [I for i,I in enumerate(temp[1, 0])]
+    assert len(seq) == len(seq_pred) == len(labels)
+    pred_pairs = get_pairs(labels)
+
+    return pred_pairs
+
+######## --------------------- parse LinearPartition output ---------------------------- #########################
+def LinearPartition_bps(id, seq):
+
+	with open(base_path + '/predictions/LinearPartition/' + id + '.prob', 'r') as f:
+		prob = pd.read_csv(f, delimiter=None, delim_whitespace=True, header=None).values
+	y_pred =  np.zeros((len(seq), len(seq)))
+	for i in prob:
+		y_pred[int(i[0])-1, int(i[1])-1] = i[2]
+
+	tri_inds = np.triu_indices(y_pred.shape[0], k=1)
+
+	out_pred = y_pred[tri_inds]
+	outputs = out_pred[:, None]
+	seq_pairs = [[tri_inds[0][j], tri_inds[1][j], ''.join([seq[tri_inds[0][j]], seq[tri_inds[1][j]]])] for j in
+		         range(tri_inds[0].shape[0])]
+
+	outputs_T = np.greater_equal(outputs, 0.198)
+	pred_pairs = [i for I, i in enumerate(seq_pairs) if outputs_T[I]]
+	pred_pairs = [i[:2] for i in pred_pairs]
+
+	return pred_pairs
+
+
+############ load base-pair prob form SPOT-RNA ##############################
+def spot_rna_bps(id, seq):
+
+    y_pred = np.loadtxt(base_path + '/predictions/SPOT-RNA/' + str(id) + '.prob')
+    tri_inds = np.triu_indices(y_pred.shape[0], k=1)
+
+    out_pred = y_pred[tri_inds]
+    outputs = out_pred[:, None]
+    seq_pairs = [[tri_inds[0][j], tri_inds[1][j], ''.join([seq[tri_inds[0][j]], seq[tri_inds[1][j]]])] for j in
+                 range(tri_inds[0].shape[0])]
+
+    outputs_T = np.greater_equal(outputs, 0.335)
+    pred_pairs = [i for I, i in enumerate(seq_pairs) if outputs_T[I]]
+    pred_pairs = [i[:2] for i in pred_pairs]
+
+    return pred_pairs
+
+
+############ load base-pair prob form SPOT-RNA ##############################
+def spot_rna2_bps(id, seq):
+
+    y_pred = np.loadtxt(base_path + '/predictions/SPOT-RNA2/' + str(id) + '.prob')
+    tri_inds = np.triu_indices(y_pred.shape[0], k=1)
+
+    out_pred = y_pred[tri_inds]
+    outputs = out_pred[:, None]
+    seq_pairs = [[tri_inds[0][j], tri_inds[1][j], ''.join([seq[tri_inds[0][j]], seq[tri_inds[1][j]]])] for j in
+                 range(tri_inds[0].shape[0])]
+
+    outputs_T = np.greater_equal(outputs, 0.795)
+    pred_pairs = [i for I, i in enumerate(seq_pairs) if outputs_T[I]]
+    pred_pairs = [i[:2] for i in pred_pairs]
+
+    return pred_pairs
+
