@@ -27,7 +27,7 @@ SPOT-RNA-2D         0.558  0.570  0.559  0.553  0.514  0.649
 
 
 ```
- 		          TS1   TS2   TS3
+ 		  TS1   TS2   TS3
 RNAfold          0.575 0.687 0.838
 LinearPartition  0.610 0.674 0.826
 ```
@@ -39,10 +39,10 @@ After removing SPOT-RNA training data overlap with test sets (TS1, TS2)
 6. `python ss_accuracy_only.py`
 
 ```
-		 		  TS1   TS2   TS3
-SPOT-RNA         0.684 0.744 0.823
-SPOT-RNA2        0.703 0.736 0.828
-RNAfold          0.575 0.687 0.838
-LinearPartition  0.610 0.674 0.826
+ 		  TS1   TS2   TS3
+SPOT-RNA         0.581 0.597 0.823
+SPOT-RNA2        0.661 0.671 0.828
+RNAfold          0.551 0.639 0.838
+LinearPartition  0.597 0.624 0.826
 ```
 

@@ -20,8 +20,8 @@ n = 1  # top L/n contacts
 spotrna_TS1 = ['4r4v_A', '4wfa_Y', '3suh_X', '4l81_A', '3ktw_C', '3adb_C', '5u3g_B', '4qg3_B', '3amt_B', '3d2v_A', '1c0a_B', '1qf6_B', '1gax_C', '2csx_C', '2dr2_B', '2zni_C', '2oiu_P', '5kpy_A', '5tpy_A', '4pqv_A', '1un6_E', '1mzp_B', '1u63_B', '1i6u_C', '4pcj_A']
 spotrna_TS2 = ['3pdr_A', '3oww_A', '4mgn_A', '3q3z_A','2qus_A', '3slm_A', '6u8k_A', '3r4f_A', '2qwy_A', '4c7o_E', '4rmo_B', '4pmi_A', '5bjp_E', '5vof_A']
 
-test1_ids = [i for i in TS1_ids if i not in spotrna_TS1]
-test2_ids = [i for i in TS2_ids if i not in spotrna_TS2]
+TS1_ids = [i for i in TS1_ids if i not in spotrna_TS1]
+TS2_ids = [i for i in TS2_ids if i not in spotrna_TS2]
 
 
 predictors = ['SPOT-RNA', 'SPOT-RNA2', 'RNAfold', 'LinearPartition']
