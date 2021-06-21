@@ -1,0 +1,20 @@
+#Name: 4pcj_A
+#Length: ,35,
+#PageNumber: 2
+#Warning: Structure contains linked PK-segments of same sizes 1 and 1. Using PK brackets for the more 5' segment
+CUGCUGGCUAAGGCAUGAAAGUGCUAUGCCUGCUG
+(((((((([.(((((((..))))))])))))))))
+SSSSSSSSBBSSSSSSSHHSSSSSSBSSSSSSSSS
+NNNNNNNNKNNNNNNNNNNNNNNNNKNNNNNNNNN
+S1 1..8 "CUGCUGGC" 28..35 "GCCUGCUG"
+S2 11..11 "A" 27..27 "U"
+S3 12..17 "GGCAUG" 20..25 "AGUGCU"
+H1 18..19 "AA" (17,20) G:A 
+B1 9..10 "UA" (8,28) C:G (11,27) A:U PK{1}
+B2 26..26 "A" (25,12) U:G (27,11) U:A PK{1}
+PK1 1bp 9..9 26..26 B1 9..10 B2 26..26
+PK1.1 9 U 26 A
+NCBP1 5 U 31 U S1
+NCBP2 2 U 34 U S1
+NCBP3 17 G 20 A S3
+segment1 15bp 1..17 CUGCUGGCUAAGGCAUG 20..35 AGUGCUAUGCCUGCUG
