@@ -34,6 +34,8 @@ LinearPartition  0.610 0.674 0.826
 
 
 After removing SPOT-RNA training data overlap with test sets (TS1, TS2)
+
+
 6. `python ss_accuracy_only.py`
 
 ```
