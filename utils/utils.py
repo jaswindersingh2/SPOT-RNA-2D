@@ -10,249 +10,125 @@ base_path = str(Path().resolve())
 
 #print(str(base_path) + '/predictions/')
 
-def get_pairs(labels):
-    pairs = []
-    stack = []
-    stack_2 = []
-    stack_3 = []
-    stack_4 = []
-    stack_5 = []
-    stack_6 = []
-    stack_7 = []
-    for i, I in enumerate(labels):
-        if I == '(':
-            stack.append(i)
-            #print(I, i)
-        elif I == ')':
-            pairs.append(sorted([stack[-1], i]))
-            #print(I, i)
-            del stack[-1]
-        elif I == '<':
-            stack_2.append(i)
-        elif I == '>':
-            pairs.append(sorted([stack_2[-1], i]))
-            del stack_2[-1]
-        elif I == '{':
-            stack_3.append(i)
-        elif I == '}':
-            pairs.append(sorted([stack_3[-1], i]))
-            del stack_3[-1]
-        elif I == '[':
-            stack_4.append(i)
-        elif I == ']':
-            pairs.append(sorted([stack_4[-1], i]))
-            del stack_4[-1]
-        elif I == 'A':
-            stack_5.append(i)
-        elif I == 'a':
-            pairs.append(sorted([stack_5[-1], i]))
-            del stack_5[-1]
-        elif I == 'B':
-            stack_6.append(i)
-        elif I == 'b':
-            pairs.append(sorted([stack_6[-1], i]))
-            del stack_6[-1]
-        elif I == 'C':
-            stack_7.append(i)
-        elif I == 'c':
-            pairs.append(sorted([stack_7[-1], i]))
-            del stack_7[-1]
-        elif I == '.' or I == '-':
-            continue
-        else:
-            print(I)
-    return pairs
+########################################################################################################
+########################################################################################################
+# ------------- one hot encoding of RNA sequences -----------------#
+BASES = 'AUGC'
+
+def one_hot(seq):
+    RNN_seq = seq
+    bases = np.array([base for base in BASES])
+    feat = np.concatenate(
+        [[(bases == base.upper()).astype(int)] if str(base).upper() in BASES else np.array([[-1] * len(BASES)]) for base
+         in RNN_seq])
+
+    return feat
+
+def z_mask(seq_len):
+    mask = np.ones((seq_len, seq_len))
+    return np.triu(mask, 1)
 
 
+def l_mask(inp, seq_len, missing_nts):
 
-########--------------------- parse GREMLIN output ---------------------------- #########################
-def GREMLIN_prob(id, seq):
-		
-############ read gremlin output ##############################
-	try:
-		with open(base_path + '/predictions/GREMLIN/' + id + '.dca') as f:
-			temp4 = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, skiprows=[0], usecols=[0,1,2]).values
+	mask = np.ones((seq_len, seq_len))
 
-		dca = np.zeros((len(seq), len(seq)))
-		for k in temp4:
-			if abs(int(k[0]) - int(k[1])) < 4:
-			    dca[int(k[0]), int(k[1])] = 1*k[2]
-			else:
-			    dca[int(k[0]), int(k[1])] = k[2]
-	except:
-		#print("dca missing", id)
-		dca = np.zeros((len(seq), len(seq)))
+	if len(missing_nts)>0:
+		for i in missing_nts:
+			mask[i,:] = 0
+			mask[:,i] = 0
 
-	return dca
+	return np.triu(mask, 1)
 
-########--------------------- parse plmc output output ---------------------------- #########################
-def plmc_prob(id, seq):
-		
-	with open(base_path + '/predictions/PLMC/' + id + '.dca') as f:
+def get_data_final(args, seq, one_hot, profile, bp_prob, dca, missing_nts):
+
+	seq_len = len(seq)
+	zero_mask = z_mask(seq_len)[None, :, :, None]
+	label_mask = l_mask(one_hot, seq_len, missing_nts)
+
+	if args.single_seq == 1:
+
+		temp = one_hot[None, :, :]
+		temp = np.tile(temp, (temp.shape[1], 1, 1))
+		feature = np.concatenate([temp, np.transpose(temp, [1, 0, 2])], 2)
+
+		feature = np.concatenate([feature, np.expand_dims(bp_prob, axis=2)], axis=2)
+		assert feature.shape==(seq_len,seq_len, 9)
+	else:
+		profile_one_hot = np.concatenate([one_hot, profile], axis=1)
+
+		temp = profile_one_hot[None, :, :]
+		temp = np.tile(temp, (temp.shape[1], 1, 1))
+		feature = np.concatenate([temp, np.transpose(temp, [1, 0, 2])], 2)
+
+		feature = np.concatenate([feature, np.expand_dims(bp_prob, axis=2), np.expand_dims(dca, axis=2)], axis=2)
+		assert feature.shape==(seq_len,seq_len, 18)
+
+	return seq_len, np.expand_dims(feature, axis=0), zero_mask, label_mask
+
+
+def get_data(args, rna_id):
+
+	with open(args.input_feats + '/' + rna_id) as f:
+		temp_1 = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, skiprows=[0]).values
+	seq_ref = ''.join([j.upper() for j in temp_1[0, 0]])
+
+	one_hot_feat = one_hot(seq_ref)
+
+	with open(args.input_feats + '/' + rna_id + '.pssm') as f:
+		temp = pd.read_csv(f, comment='#', delim_whitespace=True, header=None).values
+
+	profile = temp[:, 1:5].astype(float)
+	off_set = np.zeros((len(seq_ref), profile.shape[1])) + 0.3
+
+	for k, K in enumerate(seq_ref):
+		try:
+			off_set[k, BASES.index(K)] = 8.7
+		except:
+			pass
+
+	profile += off_set
+	profile /= np.sum(profile, axis=1, keepdims=True)
+	profile = -np.log(profile)
+
+#	profile_one_hot = np.concatenate([one_hot_feat, profile], axis=1)
+
+############ read RNAfold base-pair probability output ##############################
+	with open(args.input_feats + '/' + rna_id + '.prob') as f:
+		temp = pd.read_csv(f, comment='#', header=None).values
+	bp_prob_rnafold = np.zeros((len(seq_ref), len(seq_ref)))
+	for i in temp[:,0]:
+		a = i.split(' ')
+		bp_prob_rnafold[int(a[0]) - 1, int(a[1]) - 1] = float(a[2])**2
+
+
+################ read plmc output ##############################
+	with open(args.input_feats + '/' + rna_id + '.dca') as f:
 		temp4 = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, usecols=[0,2,5]).values
-
-	dca = np.zeros((len(seq), len(seq)))
+	dca2 = np.zeros((len(seq_ref), len(seq_ref)))
 	for k in temp4:
 		if abs(int(k[0]) - int(k[1])) < 4:
-		    dca[int(k[0]-1), int(k[1]-1)] = 1*k[2]
+			dca2[int(k[0]-1), int(k[1]-1)] = 1*k[2]
 		else:
-		    dca[int(k[0]-1), int(k[1]-1)] = k[2]
+			dca2[int(k[0]-1), int(k[1]-1)] = k[2]
 
-	return dca
+	seq_len, feature, zero_mask, label_mask = get_data_final(args, seq_ref, one_hot_feat, profile, bp_prob=bp_prob_rnafold, dca=dca2, missing_nts=[])
 
-########--------------------- parse mfdca output output ---------------------------- #########################
-def mfdca_prob(id, seq):
-		
-	with open(base_path + '/predictions/mfDCA/' + 'MFDCA_apc_fn_scores_' + id + '.txt') as f:
-		temp4 = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, skiprows=[0,1,2,3,4,5,6,7,8,9,10], usecols=[0,1,2]).values
+	return seq_ref, seq_len, feature, zero_mask, label_mask
 
-	dca = np.zeros((len(seq), len(seq)))
-	for k in temp4:
-		if abs(int(k[0]) - int(k[1])) < 4:
-			dca[int(k[0]-1), int(k[1]-1)] = 1*k[2]
-		else:
-			dca[int(k[0]-1), int(k[1]-1)] = k[2]
+def prob_to_secondary_structure(ensemble_outputs, label_mask, seq, name, args, base_path):
 
-	return dca
+    test_output = ensemble_outputs
 
-########--------------------- parse plmdca output output ---------------------------- #########################
-def plmdca_prob(id, seq):
-		
-	with open(base_path + '/predictions/plmDCA/PLMDCA_apc_fn_scores_' + id + '.txt') as f:
-		temp4 = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, skiprows=[0,1,2,3,4,5,6,7,8,9,10,11], usecols=[0,1,2]).values
-	dca = np.zeros((len(seq), len(seq)))
-	for k in temp4:
-		if abs(int(k[0]) - int(k[1])) < 4:
-			dca[int(k[0]-1), int(k[1]-1)] = 1*k[2]
-		else:
-			dca[int(k[0]-1), int(k[1]-1)] = k[2]
+    inds = np.where(label_mask == 1)
+    y_pred = np.zeros(label_mask.shape)
+    for i in range(test_output.shape[0]):
+        y_pred[inds[0][i], inds[1][i]] = test_output[i]
 
-	return dca
+    if args.outputs=='outputs/':  output_path = os.path.join(base_path, args.outputs)
+    else: output_path = args.outputs
 
-######## --------------------- parse base-pair probability RNAfold output ---------------------------- #########################
-def RNAfold_bp_prob(id, seq):
+    if args.single_seq == 1: np.savetxt(output_path + '/'+ name +'.prob_single', y_pred, delimiter='\t')
+    else: np.savetxt(output_path + '/'+ name +'.prob_profile', y_pred, delimiter='\t')
 
-    with open(base_path + '/predictions/RNAfold/' + str(id) + '.prob') as f:
-        temp = pd.read_csv(f, comment='#', header=None).values
-    output_pred = np.zeros((len(seq), len(seq)))
-    for i in temp[:,0]:
-        a = i.split(' ')
-        if abs(int(a[0]) - int(a[1])) < 4:
-            output_pred[int(a[0]) - 1, int(a[1]) - 1] = 1*float(a[2])**2
-        else:
-            output_pred[int(a[0]) - 1, int(a[1]) - 1] = float(a[2])**2
-
-    return output_pred
-
-######## --------------------- parse base-pair probability SPOT-RNA output ---------------------------- #########################
-def spotrna(id, seq):
-
-    output_pred = np.loadtxt(base_path + '/predictions/SPOT-RNA/' + str(id) + '.prob')
-
-    return output_pred
-
-######## --------------------- parse base-pair probability SPOT-RNA2 output ---------------------------- #########################
-def spotrna2(id, seq):
-
-    output_pred = np.loadtxt(base_path + '/predictions/SPOT-RNA2/' + str(id) + '.prob')
-
-    return output_pred
-
-######## --------------------- parse LinearPartition output ---------------------------- #########################
-def LinearPartition(id, seq):
-
-	with open(base_path + '/predictions/LinearPartition/' + id + '.prob', 'r') as f:
-		prob = pd.read_csv(f, delimiter=None, delim_whitespace=True, header=None).values
-	y_pred =  np.zeros((len(seq), len(seq)))
-	for i in prob:
-		y_pred[int(i[0])-1, int(i[1])-1] = i[2]
-
-	return y_pred
-
-
-######## --------------------- parse base-pair probability SPOT-RNA-2D-Single output ---------------------------- #########################
-def spotrna_2d_single(id, seq):
-
-    output_pred = np.loadtxt(base_path + '/predictions/SPOT-RNA-2D-Single/' + str(id) + '.prob')
-
-    return output_pred
-
-
-######## --------------------- parse base-pair probability SPOT-RNA-2D output ---------------------------- #########################
-def spotrna_2d(id, seq):
-    #print(base_path)
-    output_pred = np.loadtxt(base_path + '/predictions/SPOT-RNA-2D/' + str(id) + '.prob')
-
-    return output_pred
-
-
-######## --------------------- parse RNAfold output ---------------------------- #########################
-def RNAfold_bps(id, seq):
-
-    with open(base_path + '/predictions/RNAfold/' + str(id) + '.dbn') as f:
-        temp = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, usecols=[0], skiprows=[0,3,4,5]).values
-    seq_pred = [i for i in temp[0,0]]
-    labels = [I for i,I in enumerate(temp[1, 0])]
-    assert len(seq) == len(seq_pred) == len(labels)
-    pred_pairs = get_pairs(labels)
-
-    return pred_pairs
-
-######## --------------------- parse LinearPartition output ---------------------------- #########################
-def LinearPartition_bps(id, seq):
-
-	with open(base_path + '/predictions/LinearPartition/' + id + '.prob', 'r') as f:
-		prob = pd.read_csv(f, delimiter=None, delim_whitespace=True, header=None).values
-	y_pred =  np.zeros((len(seq), len(seq)))
-	for i in prob:
-		y_pred[int(i[0])-1, int(i[1])-1] = i[2]
-
-	tri_inds = np.triu_indices(y_pred.shape[0], k=1)
-
-	out_pred = y_pred[tri_inds]
-	outputs = out_pred[:, None]
-	seq_pairs = [[tri_inds[0][j], tri_inds[1][j], ''.join([seq[tri_inds[0][j]], seq[tri_inds[1][j]]])] for j in
-		         range(tri_inds[0].shape[0])]
-
-	outputs_T = np.greater_equal(outputs, 0.198)
-	pred_pairs = [i for I, i in enumerate(seq_pairs) if outputs_T[I]]
-	pred_pairs = [i[:2] for i in pred_pairs]
-
-	return pred_pairs
-
-
-############ load base-pair prob form SPOT-RNA ##############################
-def spot_rna_bps(id, seq):
-
-    y_pred = np.loadtxt(base_path + '/predictions/SPOT-RNA/' + str(id) + '.prob')
-    tri_inds = np.triu_indices(y_pred.shape[0], k=1)
-
-    out_pred = y_pred[tri_inds]
-    outputs = out_pred[:, None]
-    seq_pairs = [[tri_inds[0][j], tri_inds[1][j], ''.join([seq[tri_inds[0][j]], seq[tri_inds[1][j]]])] for j in
-                 range(tri_inds[0].shape[0])]
-
-    outputs_T = np.greater_equal(outputs, 0.335)
-    pred_pairs = [i for I, i in enumerate(seq_pairs) if outputs_T[I]]
-    pred_pairs = [i[:2] for i in pred_pairs]
-
-    return pred_pairs
-
-
-############ load base-pair prob form SPOT-RNA ##############################
-def spot_rna2_bps(id, seq):
-
-    y_pred = np.loadtxt(base_path + '/predictions/SPOT-RNA2/' + str(id) + '.prob')
-    tri_inds = np.triu_indices(y_pred.shape[0], k=1)
-
-    out_pred = y_pred[tri_inds]
-    outputs = out_pred[:, None]
-    seq_pairs = [[tri_inds[0][j], tri_inds[1][j], ''.join([seq[tri_inds[0][j]], seq[tri_inds[1][j]]])] for j in
-                 range(tri_inds[0].shape[0])]
-
-    outputs_T = np.greater_equal(outputs, 0.795)
-    pred_pairs = [i for I, i in enumerate(seq_pairs) if outputs_T[I]]
-    pred_pairs = [i[:2] for i in pred_pairs]
-
-    return pred_pairs
-
+    return

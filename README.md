@@ -1,48 +1,49 @@
 # SPOT-RNA-2D
-SPOT-RNA-2D: Predicting RNA distance contact-map by deep ensembled learning on evolutionary coupling
+Predicting RNA distance-based contact maps by integrated deep learning on physics-inferred base-pairing and evolutionary-derived coupling
+
+## Installation of SPOT-RNA-2D dependencies
 
 1. `git clone https://github.com/jaswindersingh2/SPOT-RNA-2D.git && cd SPOT-RNA-2D`
 2. `virtualenv -p python3.6 venv && source ./venv/bin/activate`
 3. `pip install -r requirements.txt`
-4. `python ss_and_non_ss_accuracy.py`
+
+## Usage
+
+### Run SPOT-RNA-2D for single RNA:
+
+4. `./run.py --rna_id 6ol3_C --input_feats input_features/ --outputs outputs/`
+
+### Run SPOT-RNA-2D for multiple RNAs:
+
+5. `./run.py --list_rna_ids datasets/TS1_ids --input_feats input_features/ --outputs outputs/`
+
+### Run SPOT-RNA-2D-Single:
+
+6. `./run.py --list_rna_ids datasets/TS3_ids --input_feats input_features/ --single_seq 1 --outputs outputs/`
 
 
-```
- 	 		 TS1 	      TS2 	    TS3
+For more options:
 
-
- 	 	     ss   non-ss   ss   non-ss   ss   non-ss
-GREMLIN             0.194  0.164  0.195  0.145  0.241  0.277 
-plmDCA              0.211  0.173  0.228  0.177  0.268  0.299 
-mfDCA               0.218  0.174  0.239  0.183  0.263  0.296 
-PLMC                0.220  0.194  0.228  0.183  0.263  0.299 
-RNAfold             0.243  0.173  0.322  0.235  0.342  0.333 
-LinearPartition     0.246  0.167  0.321  0.226  0.348  0.350 
-SPOT-RNA-2D-Single  0.369  0.455  0.503  0.516  0.509  0.656 
-SPOT-RNA-2D         0.558  0.570  0.559  0.553  0.514  0.649
-```
-
-
-5. `python ss_accuracy_only.py`
-
+6. `./run.py --help`
 
 ```
- 		  TS1   TS2   TS3
-RNAfold          0.575 0.687 0.838
-LinearPartition  0.610 0.674 0.826
-```
+usage: run.py [-h] [--rna_id] [--list_rna_ids] [--input_feats] [--single_seq]
+              [--outputs] [--gpu] [--cpu]
 
-
-After removing SPOT-RNA training data overlap with test sets (TS1, TS2)
-
-
-6. `python ss_accuracy_only.py`
-
-```
- 		  TS1   TS2   TS3
-SPOT-RNA         0.581 0.597 0.823
-SPOT-RNA2        0.661 0.671 0.828
-RNAfold          0.551 0.639 0.838
-LinearPartition  0.597 0.624 0.826
+optional arguments:
+  -h, --help       show this help message and exit
+  --rna_id         name of RNA sequence file; default = 6p2h_A
+  --list_rna_ids   file consists of list name of RNA sequence files for batch
+                   prediction; default = datasets/TS1_ids
+  --input_feats    Path to directory consists of input features files with the
+                   same name as specified with --rna_id flag; default =
+                   inputs_features/
+  --single_seq     set equal to 1 for SPOT-RNA-2D-Single; default = 0 for
+                   SPOT-RNA-2D
+  --outputs        Path to directory to save output files; default = outputs/
+  --gpu            To run on GPU, specifiy GPU number. If only one GPU in
+                   computer specifiy 0; default = -1 (no GPU)
+  --cpu            Specify number of cpu threads that program can use; default
+                   = 16
 ```
 
