@@ -19,12 +19,12 @@ Predicting RNA distance-based contact maps by integrated deep learning on physic
 
 ### Run SPOT-RNA-2D-Single:
 
-6. `./run.py --list_rna_ids datasets/TS3_ids --input_feats input_features/ --single_seq 1 --outputs outputs/`
+6. `./run.py --list_rna_ids datasets/TS1_ids --input_feats input_features/ --single_seq 1 --outputs outputs/`
 
 
 For more options:
 
-6. `./run.py --help`
+7. `./run.py --help`
 
 ```
 usage: run.py [-h] [--rna_id] [--list_rna_ids] [--input_feats] [--single_seq]

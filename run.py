@@ -14,7 +14,7 @@ from argparse import RawTextHelpFormatter
 base_path = os.path.dirname(os.path.realpath(__file__))
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--rna_id', default='6p2h_A', type=str, help='name of RNA sequence file; default = ''6p2h_A''\n', metavar='')
+parser.add_argument('--rna_id', default='', type=str, help='name of RNA sequence file; default = ''6p2h_A''\n', metavar='')
 parser.add_argument('--list_rna_ids', default='datasets/TS1_ids', type=str, help='file consists of list name of RNA sequence files for batch prediction; default = ''datasets/TS1_ids''\n', metavar='')
 parser.add_argument('--input_feats', default='input_features/', type=str, help='Path to directory consists of input features files with the same name as specified with --rna_id flag; default = ''inputs_features/''\n', metavar='')
 parser.add_argument('--single_seq', default=0, type=int, help='set equal to 1 for SPOT-RNA-2D-Single; default = ''0 for SPOT-RNA-2D''\n', metavar='')
