@@ -4,6 +4,7 @@ Predicting RNA distance-based contact maps by integrated deep learning on physic
 
 1. `source ../venv/bin/activate`
 2. `python ss_and_non_ss_accuracy.py`
+
 Old top L contacts 
 
 ```
@@ -22,6 +23,7 @@ SPOT-RNA-2D         0.558  0.570  0.559  0.553  0.514  0.649
 ```
 
 3. `python ss_and_non_ss_accuracy.py`
+
 top L contacts 
 
 ```
@@ -36,6 +38,7 @@ SPOT-RNA-2D         0.254  0.590  0.284  0.573  0.281  0.643
 ```
 
 4. `python ss_and_non_ss_accuracy.py`
+
 top L/2 contacts 
 
 ```
@@ -50,6 +53,7 @@ SPOT-RNA-2D         0.421  0.476  0.448  0.481  0.468  0.610
 ```
 
 5. `python ss_and_non_ss_accuracy.py`
+
 top L/5 contacts 
 
 ```
@@ -64,6 +68,7 @@ SPOT-RNA-2D         0.649  0.260  0.642  0.263  0.669  0.380
 ```
 
 6. `python ss_and_non_ss_accuracy.py`
+
 top L/10 contacts 
 
 ```
