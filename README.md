@@ -118,8 +118,8 @@ Refer to [benchmarking](https://github.com/jaswindersingh2/SPOT-RNA-2D/tree/main
 * RNAfold from [ViennaRNA](https://anaconda.org/bioconda/viennarna) version 2.4.18
 * utils/reformat.pl from [HHsuite-github-repo](https://github.com/soedinglab/hh-suite/tree/master/scripts)
 * utils/getpssm.pl and utils/getpssm.pl from [RNAsol standalone program](https://yanglab.nankai.edu.cn/RNAsol/)
-* utils/seqkit from [seqkit toolkit][https://bioinf.shenwei.me/seqkit/]
-* PLMC from (plmc-github-repo)[https://github.com/debbiemarkslab/plmc]
+* utils/seqkit from [seqkit toolkit](https://bioinf.shenwei.me/seqkit/)
+* PLMC from [plmc-github-repo](https://github.com/debbiemarkslab/plmc)
 
 ## Citation guide
 
@@ -130,32 +130,41 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 **If use SPOT-RNA-2D input feature pipeline, please consider citing the following papers:**
 
 RNAcmap Pipeline:
+
 [1] Zhang, T., Singh, J., Litfin, T., Zhan, J., Paliwal, K. and Zhou, Y., 2021. RNAcmap: a fully automatic pipeline for predicting contact maps of RNAs by evolutionary coupling analysis. Bioinformatics.
 
 RNAfold features:
+
 [2] Lorenz, R., Bernhart, S.H., Zu Siederdissen, C.H., Tafer, H., Flamm, C., Stadler, P.F. and Hofacker, I.L., 2011. ViennaRNA Package 2.0. Algorithms for molecular biology, 6(1), pp.1-14.
 
 INFERNAL:
+
 [3] Nawrocki, E.P. and Eddy, S.R., 2013. Infernal 1.1: 100-fold faster RNA homology searches. Bioinformatics, 29(22), pp.2933-2935.
 
 BLAST-N:
+
 [4] Altschul, S.F., Madden, T.L., Schäffer, A.A., Zhang, J., Zhang, Z., Miller, W. and Lipman, D.J., 1997. Gapped BLAST and PSI-BLAST: a new generation of protein database search programs. Nucleic acids research, 25(17), pp.3389-3402.
 
 SeqKit:
+
 [5] Shen, W., Le, S., Li, Y. and Hu, F., 2016. SeqKit: a cross-platform and ultrafast toolkit for FASTA/Q file manipulation. PloS one, 11(10), p.e0163962.
 
 PLMC:
+
 [6] Hopf, T.A., Ingraham, J.B., Poelwijk, F.J., Schärfe, C.P., Springer, M., Sander, C. and Marks, D.S., 2017. Mutation effects predicted from sequence co-variation. Nature biotechnology, 35(2), pp.128-135.
 
 **If use SPOT-RNA-2D datasets, please consider citing the following papers:**
 
 Protein Data Bank (PDB):
+
 [7] Berman, H.M., Westbrook, J., Feng, Z., Gilliland, G., Bhat, T.N., Weissig, H., Shindyalov, I.N. and Bourne, P.E., 2000. The protein data bank. Nucleic acids research, 28(1), pp.235-242.
 
 CD-HIT-EST:
+
 [8] Fu, L., Niu, B., Zhu, Z., Wu, S. and Li, W., 2012. CD-HIT: accelerated for clustering the next-generation sequencing data. Bioinformatics, 28(23), pp.3150-3152.
 
 SPOT-RNA-1D:
+
 [9] Singh, J., Paliwal, K., Singh, J. and Zhou, Y., 2021. RNA backbone torsion and pseudotorsion angle prediction using dilated convolutional neural networks. Journal of Chemical Information and Modeling.
 
 
