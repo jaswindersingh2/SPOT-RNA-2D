@@ -2,12 +2,15 @@
 
 import tensorflow as tf
 import numpy as np
+import pandas as pd
 import os
 import argparse, tqdm
 from utils.utils import get_data, prob_to_secondary_structure
 #from utils.FastaMLtoSL import FastaMLtoSL
 from pathlib import Path
 import time
+import subprocess
+
 start = time.time()
 from argparse import RawTextHelpFormatter
 
@@ -46,20 +49,28 @@ print('\nChecking for inputs features files in path ' + args.input_feats + '\n')
 
 for rna_id in list_rna_ids:
 
-	print(rna_id, end='\t\t')	
+	print('\n', rna_id+':')	
 
-	if Path(args.input_feats + '/' + rna_id).is_file(): print('RNA sequence  \u2713', end='\t\t')
+	if Path(args.input_feats + '/' + rna_id).is_file():
+		print('RNA sequence  \u2713')
+		with open(args.input_feats + '/' + rna_id) as f:
+			temp_1 = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, skiprows=[0]).values
+		seq_ref = ''.join([j.upper() for j in temp_1[0, 0]])
 	else: raise ValueError('RNA sequence file does not exists in path ' + args.input_feats + '/' + rna_id + '\n')
 
-	if args.single_seq == 1:
-		if Path(args.input_feats + '/' + rna_id + '.prob').is_file(): print('base pair probability \u2713')
-		else: raise ValueError('base pair probability file does not exists in path ' + args.input_feats + '/' + rna_id + '.prob\n')
+#	if args.single_seq == 1:
+	if Path(args.input_feats + '/' + rna_id + '_dp.ps').is_file(): print('base pair probability \u2713')
 	else:
-		if Path(args.input_feats + '/' + rna_id + '.prob').is_file(): print('base pair probability \u2713', end='\t\t')
-		else: raise ValueError('base pair probability file does not exists in path ' + args.input_feats + '/' + rna_id + '.prob\n')
+		print('base pair probability \u2717')
+		print('base pair probability file does not exists in path ' + args.input_feats + '/' + rna_id + '_dp.ps')
+		print('Generating RNAfold base-pair probability')
+		process1 = subprocess.Popen(["RNAfold", "-p", args.input_feats + '/' + rna_id], stdout=subprocess.PIPE); time.sleep(0.5)
+		process2 = subprocess.Popen(["mv", rna_id + "_dp.ps", args.input_feats + '/'], stdout=subprocess.PIPE)
+		process2 = subprocess.Popen(["mv", rna_id + "_ss.ps", args.input_feats + '/'], stdout=subprocess.PIPE)
+		if Path(args.input_feats + '/' + rna_id + '_dp.ps').is_file(): print('base pair probability \u2713')
 
 	if args.single_seq != 1:
-		if Path(args.input_feats + '/' + rna_id + '.pssm').is_file(): print('PSSM features \u2713', end='\t\t')
+		if Path(args.input_feats + '/' + rna_id + '.pssm').is_file(): print('PSSM features \u2713')
 		else: raise ValueError('PSSM file does not exists in path ' + args.input_feats + '/' + rna_id + '.pssm\n')
 
 		if Path(args.input_feats + '/' + rna_id + '.dca').is_file(): print('DCA features \u2713')
@@ -67,7 +78,9 @@ for rna_id in list_rna_ids:
 	time.sleep(0.1)
 print()
 
+
 os.environ["CUDA_VISIBLE_DEVICES"]= str(args.gpu)
+os.environ['KMP_WARNINGS'] = 'off'
 
 if args.single_seq==1:
 	NUM_MODELS = [4]
@@ -102,7 +115,7 @@ for MODEL in NUM_MODELS:
         tmp_out = graph.get_tensor_by_name('output_FC/fully_connected/BiasAdd:0')
 
         for rna_id in tqdm.tqdm(list_rna_ids):
-
+            #print(rna_id)
             seq, seq_len,feature,zero_mask,label_mask = get_data(args, rna_id)
             out = sess.run([tmp_out], feed_dict={'input_feature:0':(feature-feat_mean)/feat_std, 'zero_mask:0':zero_mask, 'label_mask:0':label_mask, 'seq_len:0':seq_len, 'dropout:0':1})
 

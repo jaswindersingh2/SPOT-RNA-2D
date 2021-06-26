@@ -94,10 +94,13 @@ def get_data(args, rna_id):
 #	profile_one_hot = np.concatenate([one_hot_feat, profile], axis=1)
 
 ############ read RNAfold base-pair probability output ##############################
-	with open(args.input_feats + '/' + rna_id + '.prob') as f:
-		temp = pd.read_csv(f, comment='#', header=None).values
+#	with open(args.input_feats + '/' + rna_id + '.prob') as f:
+#		temp = pd.read_csv(f, comment='#', header=None).values
+	with open(args.input_feats + '/' + rna_id + '_dp.ps') as f:
+		temp = pd.read_csv(f, comment='%', header=None)
+	temp = [i for i in temp[0] if i.split(' ')[-1]=='ubox']
 	bp_prob_rnafold = np.zeros((len(seq_ref), len(seq_ref)))
-	for i in temp[:,0]:
+	for i in temp:
 		a = i.split(' ')
 		bp_prob_rnafold[int(a[0]) - 1, int(a[1]) - 1] = float(a[2])**2
 
