@@ -9,7 +9,7 @@ It is recommended that your system should have 32 GB RAM, 500 GB disk space to s
 **Software Requirments:**
 * [Python3.6](https://docs.python-guide.org/starting/install3/linux/)
 * [Perl-5.4 or later](https://www.perl.org/get.html)
-* [Anaconda](https://anaconda.org/anaconda/virtualenv)
+* [Anaconda or Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 * [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive) (Optional if running on GPU)
 * [cuDNN (>= 7.4.1)](https://developer.nvidia.com/cudnn) (Optional if running on GPU)
 
@@ -117,7 +117,7 @@ Refer to [benchmarking](https://github.com/jaswindersingh2/SPOT-RNA-2D/tree/main
 * blastn and makeblastdb from [BLAST tool](https://anaconda.org/bioconda/blast) version 2.11.0
 * RNAfold from [ViennaRNA](https://anaconda.org/bioconda/viennarna) version 2.4.18
 * utils/reformat.pl from [HHsuite-github-repo](https://github.com/soedinglab/hh-suite/tree/master/scripts)
-* utils/getpssm.pl and utils/getpssm.pl from [RNAsol standalone program](https://yanglab.nankai.edu.cn/RNAsol/)
+* utils/getpssm.pl and utils/parse\_blastn\_local.pl from [RNAsol standalone program](https://yanglab.nankai.edu.cn/RNAsol/)
 * utils/seqkit from [seqkit toolkit](https://bioinf.shenwei.me/seqkit/)
 * PLMC from [plmc-github-repo](https://github.com/debbiemarkslab/plmc)
 
