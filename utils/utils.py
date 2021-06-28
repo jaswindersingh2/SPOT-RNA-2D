@@ -75,21 +75,24 @@ def get_data(args, rna_id):
 
 	one_hot_feat = one_hot(seq_ref)
 
-	with open(args.input_feats + '/' + rna_id + '.pssm') as f:
-		temp = pd.read_csv(f, comment='#', delim_whitespace=True, header=None).values
+	if args.single_seq != 1:
+		with open(args.input_feats + '/' + rna_id + '.pssm') as f:
+			temp = pd.read_csv(f, comment='#', delim_whitespace=True, header=None).values
 
-	profile = temp[:, 1:5].astype(float)
-	off_set = np.zeros((len(seq_ref), profile.shape[1])) + 0.3
+		profile = temp[:, 1:5].astype(float)
+		off_set = np.zeros((len(seq_ref), profile.shape[1])) + 0.3
 
-	for k, K in enumerate(seq_ref):
-		try:
-			off_set[k, BASES.index(K)] = 8.7
-		except:
-			pass
+		for k, K in enumerate(seq_ref):
+			try:
+				off_set[k, BASES.index(K)] = 8.7
+			except:
+				pass
 
-	profile += off_set
-	profile /= np.sum(profile, axis=1, keepdims=True)
-	profile = -np.log(profile)
+		profile += off_set
+		profile /= np.sum(profile, axis=1, keepdims=True)
+		profile = -np.log(profile)
+	else:
+		profile = []
 
 #	profile_one_hot = np.concatenate([one_hot_feat, profile], axis=1)
 
@@ -104,16 +107,18 @@ def get_data(args, rna_id):
 		a = i.split(' ')
 		bp_prob_rnafold[int(a[0]) - 1, int(a[1]) - 1] = float(a[2])**2
 
-
-################ read plmc output ##############################
-	with open(args.input_feats + '/' + rna_id + '.dca') as f:
-		temp4 = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, usecols=[0,2,5]).values
-	dca2 = np.zeros((len(seq_ref), len(seq_ref)))
-	for k in temp4:
-		if abs(int(k[0]) - int(k[1])) < 4:
-			dca2[int(k[0]-1), int(k[1]-1)] = 1*k[2]
-		else:
-			dca2[int(k[0]-1), int(k[1]-1)] = k[2]
+	if args.single_seq != 1:
+	################ read plmc output ##############################
+		with open(args.input_feats + '/' + rna_id + '.dca') as f:
+			temp4 = pd.read_csv(f, comment='#', delim_whitespace=True, header=None, usecols=[0,2,5]).values
+		dca2 = np.zeros((len(seq_ref), len(seq_ref)))
+		for k in temp4:
+			if abs(int(k[0]) - int(k[1])) < 4:
+				dca2[int(k[0]-1), int(k[1]-1)] = 1*k[2]
+			else:
+				dca2[int(k[0]-1), int(k[1]-1)] = k[2]
+	else:
+		dca2 = []
 
 	seq_len, feature, zero_mask, label_mask = get_data_final(args, seq_ref, one_hot_feat, profile, bp_prob=bp_prob_rnafold, dca=dca2, missing_nts=[])
 
