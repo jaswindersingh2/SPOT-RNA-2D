@@ -1,5 +1,5 @@
 # SPOT-RNA-2D
-Predicting RNA distance-based contact maps by integrated deep learning on physics-inferred base-pairing and evolutionary-derived coupling
+Predicting RNA distance-based contact maps by integrated deep learning on physics-inferred secondary structure and evolutionary-derived mutational coupling
 
 ## System Requirments
 
@@ -125,7 +125,7 @@ Refer to [benchmarking](https://github.com/jaswindersingh2/SPOT-RNA-2D/tree/main
 
 **If use SPOT-RNA-2D for your research, please cite the following papers:**
 
-Jaswinder Singh, Kuldip Paliwal, Thomas Litfin, Jaspreet Singh, and Yaoqi Zhou. "Predicting RNA distance-based contact maps by integrated deep learning on physics-inferred base-pairing and evolutionary-derived coupling." under-review (2021).
+Jaswinder Singh, Kuldip Paliwal, Thomas Litfin, Jaspreet Singh, and Yaoqi Zhou. "Predicting RNA distance-based contact maps by integrated deep learning on physics-inferred secondary structure and evolutionary-derived mutational coupling." under-review (2021).
 
 **If use SPOT-RNA-2D input feature pipeline, please consider citing the following papers:**
 
