@@ -2,7 +2,7 @@
 Predicting RNA distance-based contact maps by integrated deep learning on physics-inferred base-pairing and evolutionary-derived coupling
 
 
-1. `source ../venv/bin/activate`
+1. `conda activate venv_spotrna_2d`
 2. `python ss_and_non_ss_accuracy.py`
 
 Old top L contacts 
