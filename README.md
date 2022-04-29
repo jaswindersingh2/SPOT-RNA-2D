@@ -110,6 +110,10 @@ Datasets used for training, validation, and testing is available in [datasets](h
 
 Refer to [benchmarking](https://github.com/jaswindersingh2/SPOT-RNA-2D/tree/main/benchmarking) folder of this repo.
 
+## Reproduce results of tertiary modelling in the paper
+
+[https://github.com/tlitfin/SPOT-RNA-2D-tertiary](https://github.com/tlitfin/SPOT-RNA-2D-tertiary)
+
 ## Third party programs
 
 * cmbuild, cmcalibrate, and cmsearch from [INFERNAL tool](http://eddylab.org/infernal) version 1.1.4
