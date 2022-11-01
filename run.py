@@ -64,7 +64,7 @@ for rna_id in list_rna_ids:
 		print('base pair probability \u2717')
 		print('base pair probability file does not exists in path ' + args.input_feats + '/' + rna_id + '_dp.ps')
 		print('Generating RNAfold base-pair probability')
-		process1 = subprocess.Popen(["RNAfold", "-p", args.input_feats + '/' + rna_id], stdout=subprocess.PIPE); time.sleep(0.5)
+		process1 = subprocess.Popen(["RNAfold", "-p", "-i", args.input_feats + '/' + rna_id], stdout=subprocess.PIPE); time.sleep(0.5)
 		process2 = subprocess.Popen(["mv", rna_id + "_dp.ps", args.input_feats + '/'], stdout=subprocess.PIPE)
 		process2 = subprocess.Popen(["mv", rna_id + "_ss.ps", args.input_feats + '/'], stdout=subprocess.PIPE)
 		if Path(args.input_feats + '/' + rna_id + '_dp.ps').is_file(): print('base pair probability \u2713')
