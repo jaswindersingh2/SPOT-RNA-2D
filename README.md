@@ -129,7 +129,7 @@ Refer to [benchmarking](https://github.com/jaswindersingh2/SPOT-RNA-2D/tree/main
 
 **If use SPOT-RNA-2D for your research, please cite the following papers:**
 
-Jaswinder Singh, Kuldip Paliwal, Thomas Litfin, Jaspreet Singh, and Yaoqi Zhou. "Predicting RNA distance-based contact maps by integrated deep learning on physics-inferred secondary structure and evolutionary-derived mutational coupling." under-review (2021).
+Singh, J., Paliwal, K., Litfin, T., Singh, J. and Zhou, Y., 2022. Predicting RNA distance-based contact maps by integrated deep learning on physics-inferred secondary structure and evolutionary-derived mutational coupling. Bioinformatics, 38(16), pp.3900-3910.
 
 **If use SPOT-RNA-2D input feature pipeline, please consider citing the following papers:**
 
